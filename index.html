@@ -3,26 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OWT audio demo</title>
+    <title>OWT 语音测试</title>
 </head>
 <body>
     <h1 id='userInfo'></h1>
     <div style="float: left; width: 30%">
         <div style="border: 1px solid rgb(221, 221, 221); margin: 5px; padding: 5px;">
-            <div><strong>Config: </strong></div>
+            <div><strong>⚙️ 配置项</strong><span id='configGroupName'></span>:  <button type="button" onclick="clearLocalConfig()" style="background: none; color: red; border: 1px solid red; border-radius: 4px; cursor: pointer;">重置</button></div>
             <ul id="configs" style="margin: 0">
             </ul>
         </div>
         <div id='usersContainer' style="border: 1px solid rgb(221, 221, 221); margin: 5px; padding: 5px; display: none">
-            <div><strong>Users: </strong></div>
+            <div><strong>👥 用户列表: </strong></div>
             <ul id="users" style="margin: 0">
             </ul>
+        </div>
+        <div style="border: 1px solid rgb(221, 221, 221); margin: 5px; color: gray; padding: 5px; font-size: smaller;">
+            要查看日志，请打开浏览器开发者工具控制台查看
         </div>
     </div>
     <div style="float: left; width: 70%">
         <div id="audios" style="float: left;">
             <div id='localAudioConfainer' style="border: 1px solid rgb(221, 221, 221); margin: 5px; padding: 5px; float:left; display: none">
-                <div style="margin-bottom: 4px"><strong style="color: green">Your local audio stream</strong></div>
+                <div style="margin-bottom: 4px"><strong style="color: green">🗣 你的本地流</strong></div>
                 <audio id="localAudio" controls></audio>
             </div>
         </div>

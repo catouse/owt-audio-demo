@@ -14,7 +14,7 @@ function updateParticipant(participant, left) {
         userElement = document.createElement('li');
         userElement.id = 'user-' + participant.id;
     }
-    userElement.innerHTML = '<strong style="color: ' + (participant.id === userInfo.id ? 'green' : left ? 'red' : 'black') + '">' + participant.userId + '</strong> <code style="color: gray">(' + participant.id + ')</code>' + (left ? '<span style="color:red"> Left!</span>' : '');
+    userElement.innerHTML = '<strong style="color: ' + (participant.id === userInfo.id ? 'green' : left ? 'red' : 'black') + '">' + participant.userId + '</strong> <code style="color: gray">(' + participant.id + ')</code>' + (left ? '<span style="color:red"> 已离开!</span>' : '');
     document.getElementById('users').appendChild(userElement);
 }
 
@@ -58,7 +58,7 @@ function getSearchParam(key = null, search = null) {
         }
     }
     return key ? params[key] : params;
-};
+}
 
 function updateAudioElement(stream) {
     let audioElement = document.getElementById('audio-' + stream.id);
@@ -68,7 +68,7 @@ function updateAudioElement(stream) {
         const participant = participants[stream.origin];
         audioContainer.id = 'audioContainer-' + stream.id;
         const isMixed = stream.id.includes('common');
-        audioContainer.innerHTML = '<div style="margin-bottom: 4px">' + (participant ? ('<strong>' + participant.userId + '</strong>') : '') + (isMixed ? '<strong style="color: blue">Mixed stream</strong>' : ('<code style="color: gray">(' + stream.id + ')')) + '</code></div>';
+        audioContainer.innerHTML = '<div style="margin-bottom: 4px">' + (participant ? ('<strong>👤 ' + participant.userId + '</strong>') : '') + (isMixed ? '<strong style="color: blue">📢 混合流</strong>' : ('<code style="color: gray">(' + stream.id + ')')) + '</code></div>';
 
         audioElement = document.createElement('audio');
         if (!participant) {
@@ -131,7 +131,7 @@ function joinConference(callback) {
     conference.join(token).then(resp => {
         console.log('Conference.join', resp);
         userInfo = resp.self;
-        document.getElementById('userInfo').innerHTML = 'You have joined: <strong>' + userInfo.userId + '</strong> <code style="color: gray">(' + userInfo.id + ')</code>';
+        document.getElementById('userInfo').innerHTML = '你好，<strong>' + userInfo.userId + '</strong> <code style="color: gray">(' + userInfo.id + ')</code>';
 
         // 推送音频流
         if (config.publish !== false) {
@@ -188,13 +188,15 @@ function joinConference(callback) {
 }
 
 function startConference(userConfig) {
-    const storageConfig = localStorage.getItem('owt.config.api');
+    const urlConfig = getSearchParam();
+    const storageConfig = localStorage.getItem('owt.config.api.' + (urlConfig._ || ''));
     config = Object.assign({
         room: '5e44ee0cb0b6521044bbf581',
-        user: 'user',
+        user: '',
         role: 'presenter',
-        port: 3004
-    }, storageConfig ? JSON.parse(storageConfig) : null, userConfig, getSearchParam());
+        port: 3004,
+        _: ''
+    }, storageConfig ? JSON.parse(storageConfig) : null, userConfig, urlConfig);
 
     if (!config.api) {
         if (config.host) {
@@ -209,19 +211,43 @@ function startConference(userConfig) {
         alert('API 地址必须使用 https 协议。');
         config.api = config.api.replate('http:', 'https:');
     }
+    config.api = new URL(config.api);
+    if (config.api.port === '') {
+        config.api.port = '3004';
+    }
+    config.api = config.api.origin;
+
+    if (!config.user) {
+        config.user = prompt('请输入用户名，例如：zhangsan');
+        if (!config.user) {
+            config.user = 'user';
+        }
+        config.user = config.user + '-$';
+    }
 
     const configsElement = document.getElementById('configs');
     Object.keys(config).forEach(configName => {
+        if (configName === 'port' || configName === '_') return;
         const configItem = document.createElement('li');
         configItem.innerHTML = `<strong>${configName}</strong>: <code>${config[configName]}</code>`;
         configsElement.appendChild(configItem);
     });
+    if (config._) {
+        document.getElementById('configGroupName').innerText = '(' + config._ + ')';
+    }
 
     conference = new Owt.Conference.ConferenceClient();
 
     createToken(config.room, config.user.replace('$', (Date.now()%10000).toString(16)), config.role, function(serverToken) {
         token = serverToken;
-        localStorage.setItem('owt.config.api', JSON.stringify(config));
+        localStorage.setItem('owt.config.api.' + config._, JSON.stringify(config));
         joinConference();
     }, config.api);
+}
+
+function clearLocalConfig() {
+    localStorage.removeItem('owt.config.api.' + config._);
+    const url = new URL(window.location.href);
+    url.search = config._ ? ('?_=' + config._) : '';
+    window.location.href = url.href;
 }
