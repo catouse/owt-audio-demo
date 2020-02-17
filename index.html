@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>语音通话测试</title>
+</head>
+<body>
+    <h1 id='userInfo'></h1>
+    <div style="float: left; width: 30%">
+        <div style="border: 1px solid rgb(221, 221, 221); margin: 5px; padding: 5px;">
+            <div><strong>Config: </strong></div>
+            <ul id="configs" style="margin: 0">
+            </ul>
+        </div>
+        <div id='usersContainer' style="border: 1px solid rgb(221, 221, 221); margin: 5px; padding: 5px; display: none">
+            <div><strong>Users: </strong></div>
+            <ul id="users" style="margin: 0">
+            </ul>
+        </div>
+    </div>
+    <div style="float: left; width: 70%">
+        <div id="audios" style="float: left;">
+            <div id='localAudioConfainer' style="border: 1px solid rgb(221, 221, 221); margin: 5px; padding: 5px; float:left; display: none">
+                <div style="margin-bottom: 4px"><strong style="color: green">Your local audio stream</strong></div>
+                <audio id="localAudio" controls></audio>
+            </div>
+        </div>
+    </div>
+    <script src="./socket.io.js"></script>
+    <script src="./owt.js"></script>
+    <script src="./rest.js"></script>
+    <script src="./index.js"></script>
+    <script>
+    startConference();
+    </script>
+</body>
+</html>
