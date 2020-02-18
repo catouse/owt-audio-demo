@@ -144,7 +144,7 @@ function joinConference(callback) {
         });
 
         // 推送音频流
-        if (config.publish !== false) {
+        if (config.publish !== 'false') {
             const audioConstraints = new Owt.Base.AudioTrackConstraints(Owt.Base.AudioSourceInfo.MIC);
             Owt.Base.MediaStreamFactory.createMediaStream(new Owt.Base.StreamConstraints(audioConstraints)).then(stream => {
                 const publishOption = {
