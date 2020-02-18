@@ -252,3 +252,9 @@ function clearLocalConfig() {
     url.search = config._ ? ('?_=' + config._) : '';
     window.location.href = url.href;
 }
+
+function shareLocalConfig() {
+    const url = new URL(window.location.href);
+    url.search = `?_=${config._ || ''}&api=${encodeURIComponent(config.api)}&room=${config.room}&role=${config.role}`;
+    prompt('请拷贝以下地址来分享：', url.href);
+}
