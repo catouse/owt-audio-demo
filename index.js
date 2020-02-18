@@ -160,7 +160,7 @@ function joinConference(callback) {
 
                 conference.publish(localStream, publishOption).then(newPublication => {
                     console.log('conference.publish', newPublication);
-                    document.getElementById('localStreamPublished').innerText = '已推送';
+                    document.getElementById('localStreamPublished').innerText = '(已推送)';
                     publication = newPublication;
                     mixStream(config.room, publication.id, 'common', config.api);
                     publication.addEventListener('error', (error) => {
