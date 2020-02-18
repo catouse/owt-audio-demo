@@ -133,6 +133,16 @@ function joinConference(callback) {
         userInfo = resp.self;
         document.getElementById('userInfo').innerHTML = '你好，<strong>' + userInfo.userId + '</strong> <code style="color: gray">(' + userInfo.id + ')</code>';
 
+        // 订阅音频流
+        var streams = resp.remoteStreams;
+        for (const stream of streams) {
+            subscribeStream(stream);
+        }
+        conference.addEventListener('streamadded', function(event) {
+            console.log('EVENT: conference.streamadded', event);
+            subscribeStream(event.stream);
+        });
+
         // 推送音频流
         if (config.publish !== false) {
             const audioConstraints = new Owt.Base.AudioTrackConstraints(Owt.Base.AudioSourceInfo.MIC);
@@ -150,6 +160,7 @@ function joinConference(callback) {
 
                 conference.publish(localStream, publishOption).then(newPublication => {
                     console.log('conference.publish', newPublication);
+                    document.getElementById('localStreamPublished').innerText = '已推送';
                     publication = newPublication;
                     mixStream(config.room, publication.id, 'common', config.api);
                     publication.addEventListener('error', (error) => {
@@ -163,16 +174,6 @@ function joinConference(callback) {
                 console.error('Failed to create MediaStream, ' + err);
             });
         }
-
-        // 订阅音频流
-        var streams = resp.remoteStreams;
-        for (const stream of streams) {
-            subscribeStream(stream);
-        }
-        conference.addEventListener('streamadded', function(event) {
-            console.log('EVENT: conference.streamadded', event);
-            subscribeStream(event.stream);
-        });
 
         // 显示参与者
         var participants = resp.participants;
